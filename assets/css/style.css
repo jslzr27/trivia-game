@@ -1,0 +1,56 @@
+body{
+    background-image: url("../images/background-trivia.jpg");
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+}
+
+h1 {
+    font-size: 45px;
+    color: #d01d9b; 
+    font-weight: bold;
+    margin-top: 32px;
+}
+
+#startscreen {
+    background-color: rgba(23, 64, 113, 0.5);
+    margin: auto;
+    padding: 20px;
+}
+
+#start-btn {
+    background-color: #5af7dc;
+    color: #174071;
+}
+
+.row{
+    margin: auto;
+}
+#time-rem {
+    margin: auto;
+    padding: 20px;
+}
+#questions-box {
+    background-color: rgba(23, 64, 113, 0.5);
+    margin: auto;
+    padding: 20px;
+}
+
+#question {
+    margin-top: 32px;
+    font-size: 20px;
+    font-weight: 500
+}
+
+#submit-btn {
+   margin-top: 32px;
+   background-color: #5af7dc;
+   color: #174071; 
+}
+#results-screen {
+    display: none;
+    background-color: rgba(23, 64, 113, 0.5);
+    margin: auto;
+    padding: 20px;
+    font-size: 20px;
+}
