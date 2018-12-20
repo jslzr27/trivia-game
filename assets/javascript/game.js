@@ -1,4 +1,109 @@
-//Create a variable that holds an array with all the questions 
+$(document).ready(function(){
+
+    $("#start-btn").on("click", gamePlay.startTimer);
+});
+
+// 
+var gamePlay = {
+    timeLeft: 10,
+  
+    // start the timer, hide the start page, show the questions
+    startTimer: function() {
+      $("#time-rem").text("Time remaining: " + gamePlay.timeLeft);
+      setInterval(gamePlay.countdown, 1000);
+      $("#startscreen").hide();
+      trivia.questionsDisplay();
+    },
+  
+    // here is the countdown function
+    countdown: function() {
+      gamePlay.timeLeft--;
+      $("#time-rem").text("Time remaining: " + gamePlay.timeLeft);
+      if (gamePlay.timeLeft <= 0) {
+        clearInterval(gamePlay.startTimer);
+        trivia.gradeQuestions();
+      }
+    },
+  
+    // function to stop the timer
+    /*stopTimer: function() {
+      clearInterval();
+      trivia.gradeQuestions();
+      console.log(gamePlay.timeLeft);
+    },*/
+  
+    // hide the questions and display the end page with results
+    resultsPage: function(correctAns, incorrectAns, unanswered) {
+      $("#results-screen").show();
+      $("#questions-box").empty();
+      $("#questions-box").hide();
+      $("#time-rem").empty();
+      $("#time-rem").hide();
+      $("#correct-answers").text("Correct answers: " + correctAns);
+      $("#incorrect-answers").text("Incorrect answers: " + incorrectAns);
+      $("#unanswered").text("Unanswered questions: " + unanswered);
+    }
+  }
+
+  // functions for displaying questions and grading them
+var trivia = {
+
+    // pull questions from the array of questions, loop through them, and append to UI
+    questionsDisplay: function() {
+      var divQuestions = $("#questions-box");
+      divQuestions.append('<h2>Answer the following questions:</h2>');
+              
+      for (var i = 0; i < questions.length; i++) {
+  
+        divQuestions.append('<div id="question">' + questions[i].quest + '</div>');
+  
+        var answer1 = questions[i].ans[0];
+        var answer2 = questions[i].ans[1];
+        var answer3 = questions[i].ans[2];
+        var answer4 = questions[i].ans[3];
+  
+        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer1 + '</label></div>');
+        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer2 + '</label></div>');
+        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer3 + '</label></div>');
+        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer4 + '</label></div>');
+      }
+  
+      // function to add a submit button
+      var submitButton = '<button class="btn btn-primary" id="submit-btn" type="submit">Submit Answers</button>';
+      divQuestions.append(submitButton);
+      $("#submit-btn").on("click", trivia.gradeQuestions);
+    },
+  
+    // test if the user answers are correct, incorrect, or if there are unanswered questions
+    gradeQuestions: function() {
+      var correctAnswer;
+      var userAnswer;
+      var correctAns = 0;
+      var incorrectAns = 0;
+      var unanswered = 0;
+  
+      // loop to compare the text of the label with the user answers
+      for (var i = 0; i < questions.length; i++) {
+        correctAnswer = questions[i].correct;
+        userAnswer = $('input[id=radio'+i+']:checked + label').text();
+  
+        if (userAnswer === correctAnswer) {
+          correctAns++;
+        } else if (userAnswer === "") {
+          unanswered++;
+        } else if (userAnswer !== correctAnswer) {
+          {
+            incorrectAns++;
+          }
+        }
+      }
+  
+      // function to show the results page
+      gamePlay.resultsPage(correctAns, incorrectAns, unanswered);
+    },
+  }
+
+  //Create a variable that holds an array with all the questions 
 
 var questions = [{
     quest: "What year did the Champions League Start?",
@@ -92,202 +197,3 @@ var questions = [{
     divClass: "6different"
 }
 ]
-
-/*
-var labels = ["first", "second", "Third", "Fourth"];
-
-//Create a function to start the game
-
-var startGame = $("#start-btn").on("click", function() {
-    $(this).parent().hide();
-    $(".container").show();
-    countdown(60);
-    questionsDisplay();
-});
-
-//Create a function for displaying questions
-
-var questionsDisplay = function() {
-    $(".questions :not('#submit-btn')").empty();
-    //loop through the questions
-    for (var j = 0; j < questions.length; j++) {
-        $(".questions").prepend('<div class="' + questions[j].name +'"></div>');
-        $(questions[j].divClass).append('<div class = "ques-title">' + questions[j].quest + '</div>');
-        //loop for answers
-        for (var i = 0; i <= 3; i++) {
-            $(questions[j].divClass).append('<input type="radio" name="' + questions[j].name + '"value+"' + questions[j].ans[i] + '"/><label for="' + labels[i] + '">"' + questions[j].ans[i] + '</label>');
-        }
-        $('.questions').prepend('<hr />');
-    }
-}
-
-//Create a function for the timer
-
-var countdown = function(seconds) {
-    
-    var timer = setInterval(function() {
-        seconds = seconds - 1;
-        $("#time-rem").html(seconds);
-
-        if (seconds <= 0) {
-            $(".container").fadeOut(500);
-            var correctAnswers = 0;
-            var wrongAnswers = 0;
-            var unAnswered = 0;
-
-            //loop through the correct answer array to match answers 
-            for (var i = 0; i < 13; i++) {
-                if($('input:radio[name="' + questions[i].name + '"]:checked').val() === questions[i].correct) {
-                    correctAnswers++;
-                    console.log("this is correct number:" + i)
-                } else {
-                    wrongAnswers++;
-                    console.log("this is wrong number:" + i)
-                };
-            }
-            $("#correct-timeup").append(correctAnswers);
-            $("#incorrect-timeup").append(wrongAnswers);
-            $("#time-up").fadeIn(1000).show();
-
-            clearInterval(timer);
-            return;
-        }
-    }, 1000);
-
-    //Create event to stop timer when you hit submit button 
-    $("#submit-btn").on("click", function() {
-        clearInterval(timer);
-    })
-};
-
-//Create function to grade the questions to correct and incorrect
-var gradeQuestions = $("#submit-btn").on("click", function() {
-    var correctAnswers = 0;
-    var wrongAnswers = 0;
-    var unAnswered = 0;
-
-    //loop through the correct answer array to match answers 
-    for (var i = 0; i < 13; i++) {
-        if($('input:radio[name="' + questions[i].name + '"]:checked').val() === questions[i].correct) {
-            correctAnswers++;
-        } else {
-            wrongAnswers++;
-        };
-    };
-    countdown();
-
-    $(".container").fadeOut(500);
-
-    $("#results-screen").show();
-
-    $("#correct-answers").append(correctAnswers);
-
-    $("#incorrect-answers").append(wrongAnswers);
-});
-
-*/
-
-
-$(document).ready(function(){
-
-    $("#start-btn").on("click", gamePlay.startTimer);
-});
-
-// information about the state of game play
-var gamePlay = {
-    timeLeft: 60,
-  
-    // start the timer, hide the start page, show the questions
-    startTimer: function() {
-      $("#time-rem").text("Time remaining: " + gamePlay.timeLeft);
-      setInterval(gamePlay.countdown, 1000);
-      $("#startscreen").hide();
-      trivia.questionsDisplay();
-    },
-  
-    // here is the countdown function
-    countdown: function() {
-      gamePlay.timeLeft--;
-      $("#time-rem").text("Time remaining: " + gamePlay.timeLeft);
-      if (gamePlay.timeLeft === 0) {
-        gamePlay.stopTimer();
-        $("#time-rem").empty();
-      }
-    },
-  
-    // function to stop the timer
-    stopTimer: function() {
-      clearInterval(startTimer);
-      trivia.gradeQuestions();
-    },
-  
-    // hide the quetions and display the end page with results
-    resultsPage: function(correctAns, incorrectAns, unanswered) {
-      $("#results-screen").show();
-      $("#questions-box").empty();
-      $("#time-rem").empty();
-      $("#time-rem").hide();
-      $("#correct-answers").text("Correct answers: " + correctAns);
-      $("#incorrect-answers").text("Incorrect answers: " + incorrectAns);
-      $("#unanswered").text("Unanswered questions: " + unanswered);
-    }
-  }
-
-  // functions to handle the building questions page and scoring
-var trivia = {
-
-    // pull questions from the array of questions, loop through them, and append to UI
-    questionsDisplay: function() {
-      var divQuestions = $("#questions-box");
-      divQuestions.append('<h2>Answer the following questions:</h2>');
-              
-      for (var i = 0; i < questions.length; i++) {
-  
-        divQuestions.append('<div id="question">' + questions[i].quest + '</div>');
-  
-        var answer1 = questions[i].ans[0];
-        var answer2 = questions[i].ans[1];
-        var answer3 = questions[i].ans[2];
-        var answer4 = questions[i].ans[3];
-  
-        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer1 + '</label></div>');
-        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer2 + '</label></div>');
-        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer3 + '</label></div>');
-        divQuestions.append('<div class="form-check"><input class="form-check-input" type="radio" name="radio-group'+i+'" id="radio'+i+'"><label class="form-check-label" id="radio'+i+'label" for="radio'+i+'">' + answer4 + '</label></div>');
-      }
-  
-      // function to add a submit button
-      var submitButton = '<button class="btn btn-primary" id="submit-btn" type="submit">Submit Answers</button>';
-      divQuestions.append(submitButton);
-      $("#submit-btn").on("click", gamePlay.stopTimer);
-    },
-  
-    // test if the user answers are correct, incorrect, or if there are unanswered questions
-    gradeQuestions: function() {
-      var correctAnswer;
-      var userAnswer;
-      var correctAns = 0;
-      var incorrectAns = 0;
-      var unanswered = 0;
-  
-      // loop through to compare the text of the label with the user answers
-      // increment score counts appropriately
-      for (var i = 0; i < questions.length; i++) {
-        correctAnswer = questions[i].correct;
-        userAnswer = $('input[id=radio'+i+']:checked + label').text();
-  
-        if (userAnswer === correctAnswer) {
-          correctAns++;
-        } else if (userAnswer === "") {
-          unanswered++;
-        } else if (userAnswer !== correctAnswer) {
-          {
-            incorrectAns++;
-          }
-        }
-      }
-  
-      // function to show the results page
-      gamePlay.resultsPage(correctAns, incorrectAns, unanswered);
-    },
-  }
